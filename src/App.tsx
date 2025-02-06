@@ -43,7 +43,9 @@ const App = () => {
             setError(null);
             setLoading(true);
             const response = await fetch(
-                `http://128.199.63.105:3001/memories?page=${currentPage}&limit=${limit}`
+                `${
+                    import.meta.env.VITE_API_URL
+                }/memories?page=${currentPage}&limit=${limit}`
             );
 
             if (!response.ok) {

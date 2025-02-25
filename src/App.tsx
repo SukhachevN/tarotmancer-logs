@@ -65,47 +65,61 @@ const logsConfig: TableConfig<LogEntry, LogEntry> = {
     parseResponse: (response) => response,
 };
 
+const bitcoinPredictionsConfig: TableConfig<LogEntry, LogEntry> = {
+    columns: [
+        {
+            key: 'createdAt',
+            header: 'Date',
+            render: (value) => new Date(value).toLocaleString(),
+        },
+        {
+            key: 'content',
+            header: 'Content',
+        },
+    ],
+    apiUrl: `${import.meta.env.VITE_API_URL}/bitcoin-predictions`,
+    parseResponse: (response) => response,
+};
+
+const tabs = ['replies', 'logs', 'bitcoin-predictions'] as const;
+
 const App = () => {
-    const [activeTab, setActiveTab] = useState<'replies' | 'logs'>('replies');
+    const [activeTab, setActiveTab] = useState<
+        'replies' | 'logs' | 'bitcoin-predictions'
+    >('replies');
 
     return (
         <div className="bg-black text-green-500 font-mono flex flex-col h-screen">
             <div className="border-b border-green-500/30">
-                <button
-                    onClick={() => setActiveTab('replies')}
-                    className={`
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`
                         px-4 py-2 mr-2 text-sm
                         hover:bg-green-500/10 cursor-pointer
                         focus:outline-none transition-colors
                         ${
-                            activeTab === 'replies'
+                            activeTab === tab
                                 ? 'text-green-400 border-b-2 border-green-500'
                                 : 'text-green-500/70 border-b-2 border-transparent'
                         }
                     `}
-                >
-                    Replies
-                </button>
-                <button
-                    onClick={() => setActiveTab('logs')}
-                    className={`
-                        px-4 py-2 text-sm
-                        hover:bg-green-500/10 cursor-pointer
-                        focus:outline-none transition-colors
-                        ${
-                            activeTab === 'logs'
-                                ? 'text-green-400 border-b-2 border-green-500'
-                                : 'text-green-500/70 border-b-2 border-transparent'
-                        }
-                    `}
-                >
-                    Tarot Plugin Logs
-                </button>
+                    >
+                        {tab[0].toUpperCase() + tab.slice(1).replace('-', ' ')}
+                    </button>
+                ))}
             </div>
-            {activeTab === 'replies' ? (
+            {activeTab === 'replies' && (
                 <DataTable<Reply, LogEntry> config={repliesConfig} />
-            ) : (
+            )}
+            {activeTab === 'logs' && (
                 <DataTable<LogEntry, LogEntry> config={logsConfig} />
+            )}
+            {activeTab === 'bitcoin-predictions' && (
+                <DataTable<LogEntry, LogEntry>
+                    config={bitcoinPredictionsConfig}
+                />
             )}
         </div>
     );

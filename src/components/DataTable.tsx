@@ -115,7 +115,7 @@ export const DataTable = <
         <div className="bg-black text-green-500 font-mono overflow-hidden">
             <div className="max-h-[calc(100vh-40px)] overflow-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-green-500/10 [&::-webkit-scrollbar-thumb]:bg-green-500/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-green-500/70">
                 {error && (
-                    <div className="text-red-500 bg-red-500/10 border border-red-500/20 p-4 mb-4 rounded">
+                    <div className="text-red-500 bg-red-500/10 border border-red-500/20 p-4 my-4 rounded">
                         Error: {error}
                     </div>
                 )}

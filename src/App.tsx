@@ -15,6 +15,15 @@ type LogEntry = {
     content: string;
 };
 
+type BitcoinPrediction = {
+    id: string;
+    createdAt: string;
+    content: string;
+    bitcoinPrice: number;
+    direction: 'UP' | 'DOWN';
+    rightness: 'CORRECT' | 'INCORRECT' | 'NOT CHECKED';
+};
+
 const repliesConfig: TableConfig<Reply, LogEntry> = {
     columns: [
         {
@@ -65,7 +74,10 @@ const logsConfig: TableConfig<LogEntry, LogEntry> = {
     parseResponse: (response) => response,
 };
 
-const bitcoinPredictionsConfig: TableConfig<LogEntry, LogEntry> = {
+const bitcoinPredictionsConfig: TableConfig<
+    BitcoinPrediction,
+    BitcoinPrediction
+> = {
     columns: [
         {
             key: 'createdAt',
@@ -75,6 +87,19 @@ const bitcoinPredictionsConfig: TableConfig<LogEntry, LogEntry> = {
         {
             key: 'content',
             header: 'Content',
+        },
+        {
+            key: 'bitcoinPrice',
+            header: 'Bitcoin Price',
+            render: (value) => (value ? `$${value.toLocaleString()}` : 'N/A'),
+        },
+        {
+            key: 'direction',
+            header: 'Direction',
+        },
+        {
+            key: 'rightness',
+            header: 'Rightness',
         },
     ],
     apiUrl: `${import.meta.env.VITE_API_URL}/bitcoin-predictions`,
@@ -117,7 +142,7 @@ const App = () => {
                 <DataTable<LogEntry, LogEntry> config={logsConfig} />
             )}
             {activeTab === 'bitcoin-predictions' && (
-                <DataTable<LogEntry, LogEntry>
+                <DataTable<BitcoinPrediction, BitcoinPrediction>
                     config={bitcoinPredictionsConfig}
                 />
             )}

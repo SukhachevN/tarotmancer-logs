@@ -67,6 +67,7 @@ export const DataTable = <
             setData((prevData) => [...prevData, ...parsedData.data]);
             setIsHasMore(currentPage < parsedData.pagination.totalPages);
             retryCountRef.current = 0;
+            setLoading(false);
         } catch (error) {
             console.error(error);
 
@@ -106,6 +107,7 @@ export const DataTable = <
         );
 
         const currentTarget = observerTarget.current;
+
         if (currentTarget) {
             observer.observe(currentTarget);
         }

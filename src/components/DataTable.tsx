@@ -39,7 +39,7 @@ export const DataTable = <
     const [error, setError] = useState<string | null>(null);
     const observerTarget = useRef<HTMLDivElement>(null);
 
-    const fetchData = async (currentPage: number, limit: number = 50) => {
+    const fetchData = async (currentPage: number, limit: number = 5) => {
         try {
             setError(null);
             setLoading(true);

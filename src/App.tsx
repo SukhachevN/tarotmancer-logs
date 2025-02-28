@@ -111,8 +111,18 @@ const bitcoinPredictionsConfig: TableConfig<
 const tabs = ['replies', 'logs', 'bitcoin-predictions', 'accuracy'] as const;
 
 const App = () => {
-    const [activeTab, setActiveTab] =
-        useState<(typeof tabs)[number]>('replies');
+    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>(() => {
+        const savedTab = localStorage.getItem(
+            'activeTab'
+        ) as (typeof tabs)[number];
+
+        return tabs.includes(savedTab) ? savedTab : 'replies';
+    });
+
+    const handleTabChange = (tab: (typeof tabs)[number]) => {
+        setActiveTab(tab);
+        localStorage.setItem('activeTab', tab);
+    };
 
     return (
         <div className="bg-black text-green-500 font-mono flex flex-col h-screen">
@@ -120,7 +130,7 @@ const App = () => {
                 {tabs.map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => setActiveTab(tab)}
+                        onClick={() => handleTabChange(tab)}
                         className={`
                         px-4 py-2 mr-2 text-sm
                         hover:bg-green-500/10 cursor-pointer

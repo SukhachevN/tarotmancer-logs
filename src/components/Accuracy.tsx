@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface AccuracyData {
     totalItems: number;
@@ -9,23 +9,25 @@ interface AccuracyData {
     };
 }
 
+const maxRetries = 3;
+
 export const Accuracy = () => {
     const [data, setData] = useState<AccuracyData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+    const retryCountRef = useRef(0);
 
     const fetchData = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
             const url = new URL(
                 '/bitcoin-predictions-accuracy',
                 import.meta.env.VITE_API_URL
             );
 
             if (fromDate) {
-                // Преобразуем локальное время в UTC формат
                 const fromDateUTC = new Date(fromDate)
                     .toISOString()
                     .slice(0, 19)
@@ -34,7 +36,6 @@ export const Accuracy = () => {
             }
 
             if (toDate) {
-                // Преобразуем локальное время в UTC формат
                 const toDateUTC = new Date(toDate)
                     .toISOString()
                     .slice(0, 19)
@@ -51,11 +52,29 @@ export const Accuracy = () => {
             const responseData = await response.json();
             setData(responseData);
             setError(null);
-        } catch (err) {
-            setError('Failed to fetch accuracy data');
-            console.error(err);
-        } finally {
+            retryCountRef.current = 0;
             setLoading(false);
+        } catch (err) {
+            console.error(err);
+
+            if (retryCountRef.current < maxRetries) {
+                retryCountRef.current += 1;
+
+                setError(
+                    `Error loading data. Retry attempt ${retryCountRef.current}/${maxRetries}...`
+                );
+
+                setTimeout(() => {
+                    fetchData();
+                }, 1000 * retryCountRef.current);
+            } else {
+                setError('Failed to fetch accuracy data');
+                setLoading(false);
+            }
+        } finally {
+            if (retryCountRef.current >= maxRetries) {
+                setLoading(false);
+            }
         }
     };
 

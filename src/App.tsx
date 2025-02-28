@@ -1,5 +1,7 @@
 import { useState } from 'react';
+
 import { DataTable, TableConfig } from './components/DataTable';
+import { Accuracy } from './components/Accuracy';
 
 type Reply = {
     id: string;
@@ -106,12 +108,11 @@ const bitcoinPredictionsConfig: TableConfig<
     parseResponse: (response) => response,
 };
 
-const tabs = ['replies', 'logs', 'bitcoin-predictions'] as const;
+const tabs = ['replies', 'logs', 'bitcoin-predictions', 'accuracy'] as const;
 
 const App = () => {
-    const [activeTab, setActiveTab] = useState<
-        'replies' | 'logs' | 'bitcoin-predictions'
-    >('replies');
+    const [activeTab, setActiveTab] =
+        useState<(typeof tabs)[number]>('replies');
 
     return (
         <div className="bg-black text-green-500 font-mono flex flex-col h-screen">
@@ -146,6 +147,7 @@ const App = () => {
                     config={bitcoinPredictionsConfig}
                 />
             )}
+            {activeTab === 'accuracy' && <Accuracy />}
         </div>
     );
 };

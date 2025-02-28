@@ -24,6 +24,8 @@ export type TableConfig<EntityType, EntryType> = {
     };
 };
 
+const maxRetries = 3;
+
 export const DataTable = <
     EntityType extends { id: string },
     EntryType extends { id: string }
@@ -38,8 +40,9 @@ export const DataTable = <
     const [isHasMore, setIsHasMore] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const observerTarget = useRef<HTMLDivElement>(null);
+    const retryCountRef = useRef(0);
 
-    const fetchData = async (currentPage: number, limit: number = 5) => {
+    const fetchData = async (currentPage: number, limit: number = 50) => {
         try {
             setError(null);
             setLoading(true);
@@ -63,15 +66,32 @@ export const DataTable = <
 
             setData((prevData) => [...prevData, ...parsedData.data]);
             setIsHasMore(currentPage < parsedData.pagination.totalPages);
+            retryCountRef.current = 0;
         } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : 'An error occurred while fetching data'
-            );
             console.error(error);
+
+            if (retryCountRef.current < maxRetries) {
+                retryCountRef.current += 1;
+
+                setError(
+                    `Error loading data. Retry attempt ${retryCountRef.current}/${maxRetries}...`
+                );
+
+                setTimeout(() => {
+                    fetchData(currentPage, limit);
+                }, 1000 * retryCountRef.current);
+            } else {
+                setError(
+                    error instanceof Error
+                        ? error.message
+                        : 'An error occurred while fetching data'
+                );
+                setIsHasMore(false);
+            }
         } finally {
-            setLoading(false);
+            if (retryCountRef.current >= maxRetries) {
+                setLoading(false);
+            }
         }
     };
 

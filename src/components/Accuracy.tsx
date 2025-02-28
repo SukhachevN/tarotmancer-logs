@@ -53,6 +53,7 @@ export const Accuracy = () => {
             setData(responseData);
             setError(null);
             retryCountRef.current = 0;
+            setLoading(false);
         } catch (err) {
             console.error(err);
 

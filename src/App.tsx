@@ -20,10 +20,11 @@ type LogEntry = {
 type BitcoinPrediction = {
     id: string;
     createdAt: string;
-    content: string;
-    bitcoinPrice: number;
+    bitcoinCurrentPrice: number;
+    bitcoinPredictedPrice: number;
     direction: 'UP' | 'DOWN';
-    rightness: 'CORRECT' | 'INCORRECT' | 'NOT CHECKED';
+    directionRightness: 'CORRECT' | 'INCORRECT' | 'NOT CHECKED';
+    priceRightness: 'CORRECT' | 'INCORRECT' | 'NOT CHECKED';
 };
 
 const repliesConfig: TableConfig<Reply, LogEntry> = {
@@ -87,12 +88,13 @@ const bitcoinPredictionsConfig: TableConfig<
             render: (value) => new Date(value).toLocaleString(),
         },
         {
-            key: 'content',
-            header: 'Content',
+            key: 'bitcoinCurrentPrice',
+            header: 'Current Price',
+            render: (value) => (value ? `$${value.toLocaleString()}` : 'N/A'),
         },
         {
-            key: 'bitcoinPrice',
-            header: 'Bitcoin Price',
+            key: 'bitcoinPredictedPrice',
+            header: 'Predicted Price',
             render: (value) => (value ? `$${value.toLocaleString()}` : 'N/A'),
         },
         {
@@ -100,11 +102,15 @@ const bitcoinPredictionsConfig: TableConfig<
             header: 'Direction',
         },
         {
-            key: 'rightness',
-            header: 'Rightness',
+            key: 'directionRightness',
+            header: 'Direction Rightness',
+        },
+        {
+            key: 'priceRightness',
+            header: 'Price Rightness',
         },
     ],
-    apiUrl: `${import.meta.env.VITE_API_URL}/bitcoin-predictions`,
+    apiUrl: `${import.meta.env.VITE_API_URL}/bitcoin-predictions-with-allora`,
     parseResponse: (response) => response,
 };
 

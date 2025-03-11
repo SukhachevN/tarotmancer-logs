@@ -27,6 +27,15 @@ type BitcoinPrediction = {
     priceRightness: 'CORRECT' | 'INCORRECT' | 'NOT CHECKED';
 };
 
+type TwitterInteractionLog = {
+    id: string;
+    createdAt: string;
+    username: string;
+    tweet: string;
+    action: string;
+    response: string;
+};
+
 const repliesConfig: TableConfig<Reply, LogEntry> = {
     columns: [
         {
@@ -114,7 +123,43 @@ const bitcoinPredictionsConfig: TableConfig<
     parseResponse: (response) => response,
 };
 
-const tabs = ['replies', 'logs', 'bitcoin-predictions', 'accuracy'] as const;
+const twitterInteractionLogsConfig: TableConfig<
+    TwitterInteractionLog,
+    TwitterInteractionLog
+> = {
+    columns: [
+        {
+            key: 'createdAt',
+            header: 'Date',
+        },
+        {
+            key: 'username',
+            header: 'Username',
+        },
+        {
+            key: 'tweet',
+            header: 'Tweet',
+        },
+        {
+            key: 'action',
+            header: 'Action',
+        },
+        {
+            key: 'response',
+            header: 'Response',
+        },
+    ],
+    apiUrl: `${import.meta.env.VITE_API_URL}/twitter-interactions-logs`,
+    parseResponse: (response) => response,
+};
+
+const tabs = [
+    'replies',
+    'logs',
+    'bitcoin-predictions',
+    'accuracy',
+    'twitter-interactions',
+] as const;
 
 const App = () => {
     const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>(() => {
@@ -164,6 +209,11 @@ const App = () => {
                 />
             )}
             {activeTab === 'accuracy' && <Accuracy />}
+            {activeTab === 'twitter-interactions' && (
+                <DataTable<TwitterInteractionLog, TwitterInteractionLog>
+                    config={twitterInteractionLogsConfig}
+                />
+            )}
         </div>
     );
 };
